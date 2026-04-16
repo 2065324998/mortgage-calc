@@ -8,8 +8,7 @@ from .arm import adjust_rate, is_adjustment_month, get_adjustment_number
 def generate_arm_schedule(mortgage: Mortgage) -> list[PaymentEntry]:
     """Generate amortization schedule for an adjustable-rate mortgage.
 
-    Handles rate adjustments, payment caps, negative amortization,
-    and recast events when the balance exceeds the neg-am limit.
+    Handles rate adjustments, payment caps, and negative amortization.
     """
     arm = mortgage.arm_terms
     balance = mortgage.loan_amount
@@ -21,7 +20,6 @@ def generate_arm_schedule(mortgage: Mortgage) -> list[PaymentEntry]:
     )
 
     entries = []
-    recast_active = False
 
     for month in range(1, mortgage.term_months + 1):
         remaining_months = mortgage.term_months - month + 1
@@ -41,8 +39,8 @@ def generate_arm_schedule(mortgage: Mortgage) -> list[PaymentEntry]:
                     mortgage.loan_amount, current_rate, remaining_months
                 )
 
-                # Apply payment cap if applicable and not in recast
-                if arm.payment_cap is not None and not recast_active:
+                # Apply payment cap if applicable
+                if arm.payment_cap is not None:
                     prev_payment = entries[-1].payment if entries else payment
                     max_payment = round(
                         prev_payment * (1 + arm.payment_cap), 2
