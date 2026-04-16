@@ -52,12 +52,9 @@ def generate_arm_schedule(mortgage: Mortgage) -> list[PaymentEntry]:
         interest = round(balance * monthly_rate, 2)
         principal = round(payment - interest, 2)
 
-        neg_am = 0.0
-        if principal < 0:
-            neg_am = abs(principal)
-            balance = round(balance + neg_am, 2)
-        else:
-            balance = round(balance - principal, 2)
+        # Ensure principal payment is non-negative
+        principal = max(principal, 0.0)
+        balance = round(balance - principal, 2)
 
         # Final month: pay off remaining balance
         if month == mortgage.term_months and balance > 0:
@@ -73,7 +70,6 @@ def generate_arm_schedule(mortgage: Mortgage) -> list[PaymentEntry]:
             rate=current_rate,
             payment=payment,
             is_recast=is_recast,
-            neg_am_amount=neg_am,
         ))
 
     return entries
