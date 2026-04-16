@@ -34,6 +34,7 @@ class ARMTerms:
     index_rates: dict[int, float]
     payment_cap: Optional[float] = None
     neg_am_limit: Optional[float] = None
+    recast_surcharge: float = 0.025
 
 
 @dataclass
